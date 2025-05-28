@@ -14,6 +14,10 @@ docker-compose up
 
 dotnet clean
 dotnet restore
+
+dotnet dev-certs https --trust
+sudo dotnet workload update
+
 dotnet build --configuration Debug
 
 server:dotnet run --configuration Debug --urls "http://localhost:5001"
