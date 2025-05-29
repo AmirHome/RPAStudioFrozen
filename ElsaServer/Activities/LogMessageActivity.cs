@@ -8,7 +8,7 @@ using Elsa.Extensions;
 
 namespace ElsaServer.Activities
 {
-    [Activity("Logging", "Log Custom Message", "Logs a custom message to the console")]
+    [Activity("Logging", "AmirHoss", "Logs a custom message to the console")]
     public class LogMessageActivity : CodeActivity
     {
         public Input<string> Message { get; set; } = default!;
