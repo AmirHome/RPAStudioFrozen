@@ -17,7 +17,10 @@ public class If : Activity
     {
         var result = context.Get(Condition);
         var nextActivity = result ? Then : Else;
-        await context.ScheduleActivityAsync(nextActivity, OnChildCompleted);
+        if (nextActivity != null)
+            await context.ScheduleActivityAsync(nextActivity, OnChildCompleted);
+        else
+            await context.CompleteActivityAsync();
     }
 
     private async ValueTask OnChildCompleted(ActivityCompletedContext context)
