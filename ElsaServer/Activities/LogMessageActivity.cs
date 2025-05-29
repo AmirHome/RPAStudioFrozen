@@ -17,7 +17,9 @@ namespace ElsaServer.Activities
         protected override void Execute(ActivityExecutionContext context)
         {
             var logger = context.GetRequiredService<ILogger<LogMessageActivity>>();
-            var messageString = Message.Get(context);
+            string? messageString = null;
+            if (Message != null)
+                messageString = Message.Get(context);
 
             var randomNumber = Random.Shared.Next(10, 100);
             Result.Set(context, randomNumber);
@@ -26,8 +28,6 @@ namespace ElsaServer.Activities
                 logger.LogInformation($"Logger:\"{messageString}\" - Random Number: {randomNumber}");
             else
                 logger.LogWarning("LogMessageActivity: No message provided.");
-
-
         }
     }
 }
