@@ -1,0 +1,182 @@
+{
+    "$schema": "https://elsaworkflows.io/schemas/workflow-definition/v3.0.0/schema.json",
+    "id": "e3936d9129e847d5",
+    "definitionId": "184ded5f0fdb9088",
+    "name": "Workflow 1",
+    "createdAt": "2025-05-29T13:49:55.495728\u002B00:00",
+    "version": 4,
+    "toolVersion": "3.3.0.0",
+    "variables": [],
+    "inputs": [],
+    "outputs": [],
+    "outcomes": [],
+    "customProperties": {},
+    "isReadonly": false,
+    "isSystem": false,
+    "isLatest": true,
+    "isPublished": false,
+    "options": {
+        "autoUpdateConsumingWorkflows": false
+    },
+    "root": {
+        "id": "ea75ac2ec02b02d6",
+        "nodeId": "Workflow1:ea75ac2ec02b02d6",
+        "name": "Flowchart1",
+        "type": "Elsa.Flowchart",
+        "version": 1,
+        "customProperties": {
+            "notFoundConnections": [],
+            "canStartWorkflow": false,
+            "runAsynchronously": false
+        },
+        "metadata": {},
+        "activities": [
+            {
+                "text": {
+                    "typeName": "String",
+                    "expression": {
+                        "type": "Literal",
+                        "value": "Write Line"
+                    }
+                },
+                "id": "6ced5589904f02f2",
+                "nodeId": "Workflow1:ea75ac2ec02b02d6:6ced5589904f02f2",
+                "name": "WriteLine1",
+                "type": "Elsa.WriteLine",
+                "version": 1,
+                "customProperties": {
+                    "canStartWorkflow": false,
+                    "runAsynchronously": false
+                },
+                "metadata": {
+                    "designer": {
+                        "position": {
+                            "x": 317.53125,
+                            "y": 40
+                        },
+                        "size": {
+                            "width": 138.625,
+                            "height": 50
+                        }
+                    }
+                }
+            },
+            {
+                "message": {
+                    "typeName": "String",
+                    "expression": {
+                        "type": "Literal",
+                        "value": "This is Amir"
+                    }
+                },
+                "id": "64e875e5d7a5bac9",
+                "nodeId": "Workflow1:ea75ac2ec02b02d6:64e875e5d7a5bac9",
+                "name": "LogMessageActivity1",
+                "type": "Logging.LogMessageActivity",
+                "version": 1,
+                "customProperties": {
+                    "canStartWorkflow": false,
+                    "runAsynchronously": false
+                },
+                "metadata": {
+                    "designer": {
+                        "position": {
+                            "x": 583.2890625,
+                            "y": 40
+                        },
+                        "size": {
+                            "width": 182.890625,
+                            "height": 50
+                        }
+                    }
+                }
+            },
+            {
+                "interval": {
+                    "typeName": "TimeSpan",
+                    "expression": {
+                        "type": "Literal",
+                        "value": "00:01:00"
+                    }
+                },
+                "id": "316cacf682498622",
+                "nodeId": "Workflow1:ea75ac2ec02b02d6:316cacf682498622",
+                "name": "Timer1",
+                "type": "Elsa.Timer",
+                "version": 1,
+                "customProperties": {
+                    "canStartWorkflow": true,
+                    "runAsynchronously": false
+                },
+                "metadata": {
+                    "designer": {
+                        "position": {
+                            "x": 89.109375,
+                            "y": 40
+                        },
+                        "size": {
+                            "width": 108.21875,
+                            "height": 50
+                        }
+                    }
+                }
+            },
+            {
+                "id": "acf1e112d92be03",
+                "nodeId": "Workflow1:ea75ac2ec02b02d6:acf1e112d92be03",
+                "name": "PrintMessage2",
+                "type": "WriteLine.PrintMessage",
+                "version": 1,
+                "customProperties": {
+                    "canStartWorkflow": false,
+                    "runAsynchronously": false
+                },
+                "metadata": {
+                    "designer": {
+                        "position": {
+                            "x": 860,
+                            "y": -80
+                        },
+                        "size": {
+                            "width": 133.203125,
+                            "height": 50
+                        }
+                    }
+                }
+            }
+        ],
+        "variables": [],
+        "connections": [
+            {
+                "source": {
+                    "activity": "316cacf682498622",
+                    "port": "Done"
+                },
+                "target": {
+                    "activity": "6ced5589904f02f2",
+                    "port": "In"
+                }
+            },
+            {
+                "source": {
+                    "activity": "6ced5589904f02f2",
+                    "port": "Done"
+                },
+                "target": {
+                    "activity": "64e875e5d7a5bac9",
+                    "port": "In"
+                }
+            },
+            {
+                "source": {
+                    "activity": "64e875e5d7a5bac9",
+                    "port": "Done"
+                },
+                "target": {
+                    "activity": "acf1e112d92be03",
+                    "port": "In"
+                }
+            }
+        ]
+    }
+}
