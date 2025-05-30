@@ -21,8 +21,13 @@ sudo dotnet workload update
 dotnet build --configuration Debug
 
 server:
-   dotnet run --configuration Debug --urls "http://localhost:5001"
+```bash
+   dotnet add package FlaUI.Core
+   dotnet add package FlaUI.UIA3
 
+   dotnet run --project ElsaServer --configuration Debug --urls "http://localhost:5001"
+
+```
 
 ### Customizing Elsa Studio
 To customize the logo and title:
