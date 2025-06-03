@@ -1,6 +1,6 @@
 using Elsa.Workflows;
 using Elsa.Workflows.Activities;
-
+using Elsa.Workflows.Attributes;
 namespace ElsaServer.Activities;
 
 public class GenerateRandomNumberWorkflow : WorkflowBase
@@ -8,6 +8,8 @@ public class GenerateRandomNumberWorkflow : WorkflowBase
     protected override void Build(IWorkflowBuilder builder)
     {
         var randomNumber = builder.WithVariable("RandomNumber", 0m);
+        builder.Name= "Workflow Log Random Number";
+        builder.Description = "Log Random Number";
 
         builder.Root = new Sequence
         {

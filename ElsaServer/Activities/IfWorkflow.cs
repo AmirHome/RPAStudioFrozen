@@ -7,6 +7,8 @@ public class IfWorkflow : WorkflowBase
 {
     protected override void Build(IWorkflowBuilder builder)
     {
+        builder.Name= "Workflow IF";
+
         builder.Root = new If
         {
             Condition = new(context => DateTime.Now.IsDaylightSavingTime()),

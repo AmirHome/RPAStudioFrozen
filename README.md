@@ -22,8 +22,15 @@ dotnet build --configuration Debug
 
 server:
 ```bash
+   cd ElsaServer
+
    dotnet add package FlaUI.Core
    dotnet add package FlaUI.UIA3
+
+   dotnet add package Microsoft.Playwright
+   dotnet tool install --global Microsoft.Playwright.CLI
+   playwright install
+
 
    dotnet run --project ElsaServer --configuration Debug --urls "http://localhost:5001"
 

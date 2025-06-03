@@ -23,7 +23,8 @@
     <PackageReference Include="Elsa.Workflows.Api" Version="3.3.5" />
     <PackageReference Include="FlaUI.Core" Version="5.0.0" />
     <PackageReference Include="FlaUI.UIA3" Version="5.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.0-preview.5.24251.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.4" />
+    <PackageReference Include="Microsoft.Playwright" Version="1.52.0" />
   </ItemGroup>
 
 </Project>
