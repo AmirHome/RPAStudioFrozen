@@ -9,6 +9,9 @@ public class GenerateRandomNumberDirectAccessWorkflow : WorkflowBase
     {
         var randomNumber = builder.WithVariable("RandomNumber", 0m);
 
+        builder.Name= "Workflow Name";
+        builder.Description = "Workflow Description";
+
         builder.Root = new Sequence
         {
             Activities =
