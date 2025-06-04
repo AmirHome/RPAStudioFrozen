@@ -1,9 +1,6 @@
 using Elsa.Workflows;
 using Elsa.Workflows.Attributes;
 using Elsa.Workflows.Models;
-using Elsa.Workflows.Activities;
-using Elsa.Expressions;
-using Microsoft.Extensions.Logging;
 using Elsa.Extensions;
 
 namespace ElsaServer.Activities
