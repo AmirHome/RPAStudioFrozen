@@ -4,7 +4,7 @@ using Elsa.Workflows.Attributes;
 
 namespace ElsaServer.Activities;
 
-[Activity("If", "AmirHoss", "Executes one of two branches based on a condition.")]
+[Activity("If", "AH-Test", "Executes one of two branches based on a condition.")]
 
 public class If : Activity
 {

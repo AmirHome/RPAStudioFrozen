@@ -4,7 +4,7 @@ using Elsa.Workflows.Attributes;
 
 namespace ElsaServer.Activities
 {
-    [Activity("WriteLineHelloWorld", "AmirHoss", "Logs a custom message to the consolex")]
+    [Activity("PrintMessageHelloWorld", "AH-Test", "Logs a custom message to the consolex")]
     public class PrintMessage : Activity
     {
         protected override async ValueTask ExecuteAsync(ActivityExecutionContext context)

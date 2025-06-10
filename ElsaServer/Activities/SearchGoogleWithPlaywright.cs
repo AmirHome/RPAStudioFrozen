@@ -7,7 +7,7 @@ using Microsoft.Playwright;
 using Microsoft.Extensions.Logging;
 
 // Define the activity
-[Activity("PlaywrightGoogleSearch", "AmirHoss", "Navigates to Google and searches for a specified string using Playwright.")]
+[Activity("PlaywrightGoogleSearch", "AH-Playwright", "Navigates to Google and searches for a specified string using Playwright.")]
 public class SearchGoogleWithPlaywright : Activity<string> // Activity<T> where T is the output type (the final URL)
 {
     [Input(Description = "The string to search for on Google.")]

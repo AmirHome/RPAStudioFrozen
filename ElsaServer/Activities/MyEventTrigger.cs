@@ -4,7 +4,7 @@ using Elsa.Workflows.Attributes;
 
 namespace ElsaServer.Activities;
 
-[Activity("MyEventTrigger", "AmirHoss", "Executes one of two branches based on a condition.")]
+[Activity("MyEventTrigger", "AH-Test", "Executes one of two branches based on a condition.")]
 
 public class MyEventTrigger : Trigger
 {

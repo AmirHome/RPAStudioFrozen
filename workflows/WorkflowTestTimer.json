@@ -95,7 +95,7 @@
                 "id": "acf1e112d92be03",
                 "nodeId": "Workflow1:ea75ac2ec02b02d6:acf1e112d92be03",
                 "name": "PrintMessage2",
-                "type": "WriteLine.PrintMessage",
+                "type": "PrintMessageHelloWorld.PrintMessage",
                 "version": 1,
                 "customProperties": {
                     "canStartWorkflow": false,

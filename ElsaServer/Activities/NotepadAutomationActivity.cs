@@ -14,7 +14,7 @@ using ElsaActivity = Elsa.Workflows.Activity;
 
 namespace ElsaServer.Activities
 {
-    [Activity("NotepadAutomation", "AmirHoss", "Automates Notepad: opens, writes text, and saves a file on Desktop")]
+    [Activity("NotepadAutomation", "AH-FlaUI", "Automates Notepad: opens, writes text, and saves a file on Desktop")]
     public class NotepadAutomationActivity : ElsaActivity
     {
         protected override async ValueTask ExecuteAsync(ActivityExecutionContext context)
