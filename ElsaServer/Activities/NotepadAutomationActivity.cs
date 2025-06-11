@@ -10,6 +10,7 @@ using FlaUI.Core.AutomationElements;
 using FlaUI.Core.Input;
 using FlaUI.Core.WindowsAPI;
 using FlaUI.UIA3;
+using FlaUI.Core.Tools; // Added for Retry
 using ElsaActivity = Elsa.Workflows.Activity;
 
 namespace ElsaServer.Activities
@@ -27,49 +28,29 @@ namespace ElsaServer.Activities
                     {
                         UseShellExecute = false
                     };
-                    var initialApp = Application.AttachOrLaunch(psi);
-                    await Task.Delay(2500);
+                    // Launch Notepad and allow FlaUI to manage the application lifecycle
+                    var app = Application.Launch(psi); // Changed from AttachOrLaunch for more direct control if needed for retries
 
-                    Application app;
-                    try
-                    {
-                        app = Application.Attach("notepad");
-                    }
-                    catch
-                    {
-                        app = initialApp;
-                    }
-
-                    Window? window = null;
-                    int attempts = 0;
-                    const int maxAttempts = 10;
-                    while (window == null && attempts < maxAttempts)
-                    {
-                        try { window = app.GetMainWindow(automation); } catch { }
-                        if (window == null) { attempts++; await Task.Delay(1000); }
-                    }
-                    if (window == null)
-                        throw new Exception("Unable to locate Notepad main window.");
+                    // Retry logic for getting the main window
+                    var windowResult = Retry.WhileNull(() => app.GetMainWindow(automation), TimeSpan.FromSeconds(15), TimeSpan.FromMilliseconds(500));
+                    var window = windowResult.Result ?? throw new Exception("Unable to locate Notepad main window after multiple attempts.");
 
                     window.Focus();
-                    await Task.Delay(1000);
+                    // Removed Task.Delay(1000)
 
-                    AutomationElement? editElement = null;
-                    attempts = 0;
-                    while (editElement == null && attempts < maxAttempts)
+                    // Retry logic for finding the edit element
+                    var editElementResult = Retry.WhileNull(() =>
                     {
-                        window.Focus();
-                        editElement = window.FindFirstDescendant(cf => cf.ByClassName("Edit"))
-                                     ?? window.FindFirstDescendant(cf => cf.ByControlType(FlaUI.Core.Definitions.ControlType.Edit))
-                                     ?? window.FindFirstDescendant(cf => cf.ByControlType(FlaUI.Core.Definitions.ControlType.Document));
-                        if (editElement == null) { attempts++; await Task.Delay(1500); }
-                    }
-                    if (editElement == null)
-                        throw new Exception("Could not find text edit area.");
+                        window.Focus(); // Ensure window is focused before searching
+                        return window.FindFirstDescendant(cf => cf.ByClassName("Edit"))
+                               ?? window.FindFirstDescendant(cf => cf.ByControlType(FlaUI.Core.Definitions.ControlType.Edit))
+                               ?? window.FindFirstDescendant(cf => cf.ByControlType(FlaUI.Core.Definitions.ControlType.Document));
+                    }, TimeSpan.FromSeconds(10), TimeSpan.FromMilliseconds(500));
+                    var editElement = editElementResult.Result ?? throw new Exception("Could not find text edit area after multiple attempts.");
 
                     var edit = editElement.AsTextBox();
                     edit.Focus();
-                    await Task.Delay(100);
+                    await Task.Delay(100); // Keeping this short delay for focus stability before typing
 
                     string line1 = "Hello from FlaUI!";
                     string line2 = "This is an automated test.";
@@ -81,47 +62,57 @@ namespace ElsaServer.Activities
                     {
                         Keyboard.Type(VirtualKeyShort.KEY_S);
                     }
-                    await Task.Delay(1500);
 
-                    Window? saveDialog = window.ModalWindows.FirstOrDefault();
+                    // Retry logic for the save dialog to appear
+                    var saveDialogResult = Retry.WhileNull(() => window.ModalWindows.FirstOrDefault(), TimeSpan.FromSeconds(5));
+                    var saveDialog = saveDialogResult.Result;
+
                     if (saveDialog != null)
                     {
-                        AutomationElement? fileNameElement = null;
-                        attempts = 0;
-                        while (fileNameElement == null && attempts < maxAttempts)
-                        {
-                            fileNameElement = saveDialog.FindFirstDescendant(cf => cf.ByClassName("Edit"))
-                                            ?? saveDialog.FindFirstDescendant(cf => cf.ByControlType(FlaUI.Core.Definitions.ControlType.Edit));
-                            if (fileNameElement == null) { attempts++; await Task.Delay(1000); }
-                        }
-                        if (fileNameElement == null)
-                            throw new Exception("Could not find file name text box.");
-                        var fileNameBox = fileNameElement.AsTextBox();
-                        string fileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "FlaUITest.txt");
-                        fileNameBox.Enter(fileName);
+                        saveDialog.Focus(); // Focus the dialog before interacting
 
-                        AutomationElement? saveButtonElement = null;
-                        attempts = 0;
-                        while (saveButtonElement == null && attempts < maxAttempts)
-                        {
-                            saveButtonElement = saveDialog.FindFirstDescendant(cf => cf.ByAutomationId("1"));
-                            if (saveButtonElement == null) { attempts++; await Task.Delay(1000); }
-                        }
-                        if (saveButtonElement == null)
-                            throw new Exception("Could not find save button.");
+                        // Retry logic for finding the file name text box
+                        var fileNameElementResult = Retry.WhileNull(() =>
+                            saveDialog.FindFirstDescendant(cf => cf.ByClassName("Edit"))
+                            ?? saveDialog.FindFirstDescendant(cf => cf.ByControlType(FlaUI.Core.Definitions.ControlType.Edit)),
+                            TimeSpan.FromSeconds(5));
+                        var fileNameElement = fileNameElementResult.Result ?? throw new Exception("Could not find file name text box in save dialog.");
+                        var fileNameBox = fileNameElement.AsTextBox();
+
+                        string fileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "FlaUITest.txt");
+                        fileNameBox.Enter(fileName); // Enter text
+
+                        // Retry logic for finding the save button
+                        var saveButtonElementResult = Retry.WhileNull(() => saveDialog.FindFirstDescendant(cf => cf.ByAutomationId("1")), TimeSpan.FromSeconds(5));
+                        var saveButtonElement = saveButtonElementResult.Result ?? throw new Exception("Could not find save button in save dialog.");
                         var saveButton = saveButtonElement.AsButton();
+
                         saveButton.Invoke();
                     }
-                    app.Close();
+                    else
+                    {
+                        // If save dialog doesn't appear, perhaps the file was already saved or another issue occurred.
+                        // For this example, we'll just log or note this. If it's an error, an exception could be thrown.
+                        Console.WriteLine("Save dialog did not appear as expected.");
+                        // Depending on desired behavior, may need to throw an exception here if dialog is critical
+                    }
+
+                    // Ensure app is closed, consider if it needs to be conditional on successful save or handled differently
+                    if (!app.HasExited)
+                    {
+                        app.Close();
+                    }
                 }
             }
             catch (Exception ex)
             {
+                // Log the exception details here through ILogger if available, or rethrow as appropriate
                 Console.WriteLine($"Error in Notepad automation: {ex.Message}");
-                throw;
+                // Consider how to handle this in Elsa context, e.g., setting fault or specific output
+                throw; // Rethrowing to allow Elsa to handle it as a fault
             }
             
-            await context.CompleteActivityAsync();
+            await context.CompleteActivityAsync(); // Ensure this is called appropriately based on success/failure
         }
     }
 }

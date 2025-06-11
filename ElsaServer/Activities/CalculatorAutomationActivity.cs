@@ -2,8 +2,9 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 using FlaUI.Core;
-using FlaUI.UIA3;
 using FlaUI.Core.AutomationElements;
+using FlaUI.Core.Tools; // Added for Retry
+using FlaUI.UIA3;
 using Elsa.Workflows;
 using Elsa.Workflows.Attributes;
 using ElsaActivity = Elsa.Workflows.Activity;
@@ -16,12 +17,13 @@ namespace ElsaServer.Activities
         protected override async ValueTask ExecuteAsync(ActivityExecutionContext context)
         {
             var process = Process.Start("calc.exe");
-            Thread.Sleep(1000);
 
             using (var app = Application.Attach(process))
             using (var automation = new UIA3Automation())
             {
-                var window = app.GetMainWindow(automation);
+                var windowResult = Retry.WhileNull(() => app.GetMainWindow(automation), TimeSpan.FromSeconds(5));
+                var window = windowResult.Result;
+
                 if (window != null)
                 {
                     window.Focus();
@@ -29,13 +31,15 @@ namespace ElsaServer.Activities
                     FlaUI.Core.Input.Keyboard.Type("*");
                     FlaUI.Core.Input.Keyboard.Type("0.02");
                     FlaUI.Core.Input.Keyboard.Type("=");
-                    Thread.Sleep(500);
-                    var result = window.FindFirstDescendant(cf => cf.ByAutomationId("CalculatorResults"))?.AsLabel()?.Text;
-                    Console.WriteLine("Result: " + result);
+
+                    var resultLabel = Retry.WhileNull(() => window.FindFirstDescendant(cf => cf.ByAutomationId("CalculatorResults"))?.AsLabel(), TimeSpan.FromSeconds(5)).Result;
+                    var resultText = Retry.WhileStringEmpty(() => resultLabel?.Text, TimeSpan.FromSeconds(5)).Result;
+
+                    Console.WriteLine("Result: " + resultText);
                 }
                 else
                 {
-                    Console.WriteLine("Calculator window not found.");
+                    Console.WriteLine("Calculator window not found within the timeout period.");
                 }
             }
             await context.CompleteActivityAsync();

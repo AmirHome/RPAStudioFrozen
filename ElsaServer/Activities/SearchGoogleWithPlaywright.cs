@@ -73,7 +73,7 @@ public class SearchGoogleWithPlaywright : Activity<string> // Activity<T> where 
                     logger.LogInformation("Clicking consent button");
                     await acceptButton.ClickAsync();
                     await page.WaitForLoadStateAsync(LoadState.Load);
-                    if (!headless) await Task.Delay(2000); // Delay for visibility in non-headless mode
+                    // Removed Task.Delay(2000) for visibility in non-headless mode
                     logger.LogInformation("Cookie consent handled successfully");
                 }
                 else
@@ -94,7 +94,7 @@ public class SearchGoogleWithPlaywright : Activity<string> // Activity<T> where 
                 logger.LogInformation("Search input found. Filling with '{SearchString}'", searchString);
                 context.JournalData.Add("WorkflowStatus", "Filling Search Input");
                 await searchInput.FillAsync(searchString);
-                if (!headless) await Task.Delay(2000); // Delay for visibility
+                // Removed Task.Delay(2000) for visibility
                 logger.LogInformation("Pressing Enter to initiate search");
                 context.JournalData.Add("WorkflowStatus", "Initiating Search");
                 await searchInput.PressAsync("Enter");
