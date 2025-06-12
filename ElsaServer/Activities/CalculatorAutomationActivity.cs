@@ -10,7 +10,7 @@ using ElsaActivity = Elsa.Workflows.Activity;
 
 namespace ElsaServer.Activities
 {
-    [Activity("CalculatorAutomation", "AH-FlaUI", "محاسبه با ماشین حساب ویندوز با FlaUI")]
+    [Activity("CalculatorAutomation", "AH-FlaUI", "CalculatorFlaUI")]
     public class CalculatorAutomationActivity : ElsaActivity
     {
         protected override async ValueTask ExecuteAsync(ActivityExecutionContext context)
