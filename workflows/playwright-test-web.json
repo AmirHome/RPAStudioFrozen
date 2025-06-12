@@ -1,0 +1,109 @@
+{
+    "$schema": "https://elsaworkflows.io/schemas/workflow-definition/v3.0.0/schema.json",
+    "id": "44a6ab9a04be9103",
+    "definitionId": "c66e1b0129033a5f",
+    "name": "Playwright Test Web",
+    "createdAt": "2025-06-12T12:07:37.738778\u002B00:00",
+    "version": 2,
+    "toolVersion": "3.3.0.0",
+    "variables": [],
+    "inputs": [],
+    "outputs": [],
+    "outcomes": [],
+    "customProperties": {},
+    "isReadonly": false,
+    "isSystem": false,
+    "isLatest": true,
+    "isPublished": true,
+    "options": {
+        "autoUpdateConsumingWorkflows": false
+    },
+    "root": {
+        "id": "cf50f2777f0f3961",
+        "nodeId": "Workflow1:cf50f2777f0f3961",
+        "name": "Flowchart1",
+        "type": "Elsa.Flowchart",
+        "version": 1,
+        "customProperties": {
+            "notFoundConnections": [],
+            "canStartWorkflow": false,
+            "runAsynchronously": false
+        },
+        "metadata": {},
+        "activities": [
+            {
+                "headless": {
+                    "typeName": "Boolean",
+                    "expression": {
+                        "type": "Literal",
+                        "value": "False"
+                    }
+                },
+                "id": "88fa72324745b4f2",
+                "nodeId": "Workflow1:cf50f2777f0f3961:88fa72324745b4f2",
+                "name": "ClickTestOnWeb1",
+                "type": "ClickTestOnWeb.ClickTestOnWeb",
+                "version": 1,
+                "customProperties": {
+                    "canStartWorkflow": false,
+                    "runAsynchronously": false
+                },
+                "metadata": {
+                    "designer": {
+                        "position": {
+                            "x": -20,
+                            "y": -132.5
+                        },
+                        "size": {
+                            "width": 157.59375,
+                            "height": 50
+                        }
+                    }
+                }
+            },
+            {
+                "interval": {
+                    "typeName": "TimeSpan",
+                    "expression": {
+                        "type": "Literal",
+                        "value": "00:02:00"
+                    }
+                },
+                "id": "7b0b0c725389dce",
+                "nodeId": "Workflow1:cf50f2777f0f3961:7b0b0c725389dce",
+                "name": "Timer1",
+                "type": "Elsa.Timer",
+                "version": 1,
+                "customProperties": {
+                    "canStartWorkflow": true,
+                    "runAsynchronously": false
+                },
+                "metadata": {
+                    "designer": {
+                        "position": {
+                            "x": -217.796875,
+                            "y": -132.5
+                        },
+                        "size": {
+                            "width": 108.234375,
+                            "height": 50
+                        }
+                    }
+                }
+            }
+        ],
+        "variables": [],
+        "connections": [
+            {
+                "source": {
+                    "activity": "7b0b0c725389dce",
+                    "port": "Done"
+                },
+                "target": {
+                    "activity": "88fa72324745b4f2",
+                    "port": "In"
+                }
+            }
+        ]
+    }
+}

@@ -2,8 +2,8 @@
     "$schema": "https://elsaworkflows.io/schemas/workflow-definition/v3.0.0/schema.json",
     "id": "16b1f50607abbb",
     "definitionId": "e198d607e71250d2",
-    "name": "Workflow Test Notepad",
-    "createdAt": "2025-06-03T13:14:37.8252934\u002B00:00",
+    "name": "FlaUI Test Notepad",
+    "createdAt": "2025-06-12T11:44:46.5774324\u002B00:00",
     "version": 1,
     "toolVersion": "3.3.0.0",
     "variables": [],
@@ -44,8 +44,8 @@
                 "metadata": {
                     "designer": {
                         "position": {
-                            "x": -189.296875,
-                            "y": -63.5
+                            "x": -200,
+                            "y": -240
                         },
                         "size": {
                             "width": 235.21875,
@@ -53,9 +53,50 @@
                         }
                     }
                 }
+            },
+            {
+                "interval": {
+                    "typeName": "TimeSpan",
+                    "expression": {
+                        "type": "Literal",
+                        "value": "00:05:00"
+                    }
+                },
+                "id": "129414333b0cb2be",
+                "nodeId": "Workflow1:a28ef088732e97:129414333b0cb2be",
+                "name": "Timer1",
+                "type": "Elsa.Timer",
+                "version": 1,
+                "customProperties": {
+                    "canStartWorkflow": true,
+                    "runAsynchronously": false
+                },
+                "metadata": {
+                    "designer": {
+                        "position": {
+                            "x": -372.234375,
+                            "y": -240
+                        },
+                        "size": {
+                            "width": 108.234375,
+                            "height": 50
+                        }
+                    }
+                }
             }
         ],
         "variables": [],
-        "connections": []
+        "connections": [
+            {
+                "source": {
+                    "activity": "129414333b0cb2be",
+                    "port": "Done"
+                },
+                "target": {
+                    "activity": "61b3e14f28372971",
+                    "port": "In"
+                }
+            }
+        ]
     }
 }
