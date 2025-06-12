@@ -28,16 +28,9 @@ namespace ElsaServer.Activities
         private IPlaywright? _playwright;
         private IBrowser? _browser;
         private IPage? _page;
-        private IBrowserContext? _browserContext;
-        private readonly ILogger<GmailLoginActivity> _logger;
-
-        public GmailLoginActivity(ILogger<GmailLoginActivity> logger)
+        private IBrowserContext? _browserContext;        private ILogger<GmailLoginActivity>? _logger;        protected override async ValueTask ExecuteAsync(ActivityExecutionContext context)
         {
-            _logger = logger;
-        }
-
-        protected override async ValueTask ExecuteAsync(ActivityExecutionContext context)
-        {
+            _logger = context.GetRequiredService<ILogger<GmailLoginActivity>>();
             var email = Email.Get(context);
             var password = Password.Get(context);
             var cookieFile = CookieStoragePath.Get(context);
@@ -73,7 +66,7 @@ namespace ElsaServer.Activities
                             await _page.ClickAsync("#identifierNext");
                             
                             // Wait for password field and enter password
-                            await _page.WaitForSelectorAsync("[type='password']", new() { Timeout = 10000 });
+                            await _page.WaitForSelectorAsync("[type='password']", new() { Timeout = 100000 });
                             await _page.FillAsync("[type='password']", password);
                             await _page.ClickAsync("#passwordNext");
 

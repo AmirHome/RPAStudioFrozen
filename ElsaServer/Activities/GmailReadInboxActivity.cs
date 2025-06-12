@@ -28,18 +28,11 @@ namespace ElsaServer.Activities
         private IPlaywright? _playwright;
         private IBrowser? _browser;
         private IPage? _page;
-        private IBrowserContext? _browserContext;
-        private readonly ILogger<GmailReadInboxActivity> _logger;
-
-        public GmailReadInboxActivity(ILogger<GmailReadInboxActivity> logger)
-        {
-            _logger = logger;
-        }
-
-        protected override async ValueTask ExecuteAsync(ActivityExecutionContext context)
+        private IBrowserContext? _browserContext;        private ILogger<GmailReadInboxActivity>? _logger;        protected override async ValueTask ExecuteAsync(ActivityExecutionContext context)
         {
             try
             {
+                _logger = context.GetRequiredService<ILogger<GmailReadInboxActivity>>();
                 var cookieFile = CookieStoragePath.Get(context);
                 
                 // Initialize Playwright
