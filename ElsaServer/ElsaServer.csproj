@@ -6,25 +6,28 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <ProjectReference Include="..\ElsaStudio\ElsaStudio.csproj" />
+    <Reference Include="Accessibility" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Elsa" Version="3.3.5" />
-    <PackageReference Include="Elsa.CSharp" Version="3.3.5" />
-    <PackageReference Include="Elsa.EntityFrameworkCore" Version="3.3.5" />
-    <PackageReference Include="Elsa.EntityFrameworkCore.Sqlite" Version="3.3.5" />
-    <PackageReference Include="Elsa.Identity" Version="3.3.5" />
-    <PackageReference Include="Elsa.JavaScript" Version="3.3.5" />
-    <PackageReference Include="Elsa.Liquid" Version="3.3.5" />
-    <PackageReference Include="Elsa.Scheduling" Version="3.3.5" />
-    <PackageReference Include="Elsa.Workflows.Api" Version="3.3.5" />
+    <PackageReference Include="Elsa" Version="3.4.0" />
+    <PackageReference Include="Elsa.CSharp" Version="3.4.0" />
+    <PackageReference Include="Elsa.EntityFrameworkCore" Version="3.4.0" />
+    <PackageReference Include="Elsa.EntityFrameworkCore.Sqlite" Version="3.4.0" />
+    <PackageReference Include="Elsa.Identity" Version="3.4.0" />
+    <PackageReference Include="Elsa.JavaScript" Version="3.4.0" />
+    <PackageReference Include="Elsa.Liquid" Version="3.4.0" />
+    <PackageReference Include="Elsa.Scheduling" Version="3.4.0" />
+    <PackageReference Include="Elsa.Workflows.Api" Version="3.4.0" />
     <PackageReference Include="FlaUI.Core" Version="5.0.0" />
     <PackageReference Include="FlaUI.UIA3" Version="5.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.4" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.6" />
     <PackageReference Include="Microsoft.Playwright" Version="1.52.0" />
+    <PackageReference Include="Microsoft.Windows.Compatibility" Version="9.0.6" />
   </ItemGroup>
+
 
 </Project>

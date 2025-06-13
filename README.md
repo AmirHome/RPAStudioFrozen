@@ -1,44 +1,36 @@
-# Elsa Server and Studio
-
-This is the accompanying source code for the Elsa Server and Studio installation guide.
-
+## Install 
+   https://docs.elsaworkflows.io/application-types/elsa-server-+-studio-wasm
 
 
-### Prerequisites PostgreSQL
-docker-compose up
 
-
-### Change Dotnet Core Version
+## Change Dotnet Core Version to 9.0
 ~/.zshrc
+dotnet --version
 
-
-dotnet clean
-dotnet restore
-
-dotnet dev-certs https --trust
-sudo dotnet workload update
-
-dotnet build --configuration Debug
-
-server:
+## Ready
 ```bash
-   cd ElsaServer
 
-   dotnet add package FlaUI.Core
-   dotnet add package FlaUI.UIA3
+    dotnet clean
+    dotnet restore
+    dotnet dev-certs https --trust
+    sudo dotnet workload update
 
-   dotnet add package Microsoft.Playwright
-   dotnet tool install --global Microsoft.Playwright.CLI
-   playwright install
-
-
-   dotnet run --project ElsaServer --configuration Debug --urls "http://localhost:5001"
+    dotnet build --configuration Debug
 
 ```
 
-### Customizing Elsa Studio
-To customize the logo and title:
-1. Create a `wwwroot` directory
-2. Add your custom logo as `wwwroot/custom-logo.png`
-3. Add your custom favicon as `wwwroot/custom-favicon.png`
-4. The custom index.html will override the default Elsa Studio interface
+Get-Acl .\ElsaServer\elsa.sqlite.db | Format-List
+
+## Run
+```bash
+    cd ElsaServer
+
+    dotnet add package FlaUI.Core
+    dotnet add package FlaUI.UIA3
+
+    dotnet add package Microsoft.Playwright
+    dotnet tool install --global Microsoft.Playwright.CLI
+    playwright install
+
+    dotnet run --project ElsaServer --configuration Debug --urls "http://localhost:5001"
+```
