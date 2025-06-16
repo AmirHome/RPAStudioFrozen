@@ -1,0 +1,9 @@
+2025/06/16-14:34:46.482 3d34 Reusing MANIFEST C:\Users\econadmin\Codes\dotnet\RPAStudioFrozen\ElsaServer\Default\IndexedDB\https_mail.google.com_0.indexeddb.leveldb/MANIFEST-000001
+2025/06/16-14:34:46.482 3d34 Recovering log #50
+2025/06/16-14:34:46.483 3d34 Reusing old log C:\Users\econadmin\Codes\dotnet\RPAStudioFrozen\ElsaServer\Default\IndexedDB\https_mail.google.com_0.indexeddb.leveldb/000050.log 
+2025/06/16-14:34:49.082 3938 Compacting 1@1 + 1@2 files
+2025/06/16-14:34:49.099 3938 Generated table #53@1: 176 keys, 658444 bytes
+2025/06/16-14:34:49.099 3938 Compacted 1@1 + 1@2 files => 658444 bytes
+2025/06/16-14:34:49.101 3938 compacted to: files[ 0 0 1 0 0 0 0 ]
+2025/06/16-14:34:49.102 3938 Delete type=2 #49
+2025/06/16-14:34:49.103 3938 Delete type=2 #51

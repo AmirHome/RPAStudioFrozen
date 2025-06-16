@@ -1,0 +1,6 @@
+2025/06/16-14:36:46.497 16c8 Reusing MANIFEST C:\Users\econadmin\Codes\dotnet\RPAStudioFrozen\ElsaServer\Default\IndexedDB\https_mail.google.com_0.indexeddb.leveldb/MANIFEST-000001
+2025/06/16-14:36:46.498 16c8 Recovering log #50
+2025/06/16-14:36:46.507 16c8 Reusing old log C:\Users\econadmin\Codes\dotnet\RPAStudioFrozen\ElsaServer\Default\IndexedDB\https_mail.google.com_0.indexeddb.leveldb/000050.log 
+2025/06/16-14:36:49.763 3914 Level-0 table #56: started
+2025/06/16-14:36:49.799 3914 Level-0 table #56: 3133920 bytes OK
+2025/06/16-14:36:49.802 3914 Delete type=0 #50
