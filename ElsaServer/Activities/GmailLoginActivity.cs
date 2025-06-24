@@ -37,10 +37,17 @@ namespace ElsaServer.Activities
             _logger = context.GetRequiredService<ILogger<GmailLoginActivity>>();
             var email = Email.Get(context);
             var password = Password.Get(context);
-            var cookieFile = CookieStoragePath.Get(context);
+            //var cookieFile = CookieStoragePath.Get(context);
             var maxRetries = MaxRetries.Get(context);
             var retryCount = 0;
             var success = false;
+
+
+            var cookieFileName = CookieStoragePath.Get(context);
+            var cookiesDir = System.IO.Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "cookies");
+            var cookieFile = System.IO.Path.GetFullPath(System.IO.Path.Combine(cookiesDir, cookieFileName));
+            if (!Directory.Exists(cookiesDir)) Directory.CreateDirectory(cookiesDir);
+
 
             // Check if cookie file exists
             if (File.Exists(cookieFile))
