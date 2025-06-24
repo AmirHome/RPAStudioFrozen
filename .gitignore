@@ -54,6 +54,9 @@ project.fragment.lock.json
 artifacts/
 **/Properties/launchSettings.json
 
+
+ElsaServer/gmail_cookies.json
+
 # StyleCop
 StyleCopReport.xml
 

@@ -23,9 +23,6 @@ namespace ElsaServer.Activities
         [Input(Description = "Maximum retry attempts", DefaultValue = 3)]
         public Input<int> MaxRetries { get; set; } = new(3);
 
-        [Input(Description = "User data directory for persistent browser profile")]
-        public Input<string?> UserDataDir { get; set; } = default!;
-
         [Output(Description = "Login success status")]
         public Output<bool> Success { get; set; } = default!;
 
@@ -33,71 +30,102 @@ namespace ElsaServer.Activities
         private IBrowser? _browser;
         private IPage? _page;
         private ILogger<GmailLoginActivity>? _logger;
+        private IBrowserContext? _browserContext; // Moved browser context to class level
 
         protected override async ValueTask ExecuteAsync(ActivityExecutionContext context)
         {
             _logger = context.GetRequiredService<ILogger<GmailLoginActivity>>();
+            var email = Email.Get(context);
+            var password = Password.Get(context);
+            var cookieFile = CookieStoragePath.Get(context);
+            var maxRetries = MaxRetries.Get(context);
+            var retryCount = 0;
+            var success = false;
 
-            var email = context.Get(Email);
-            var password = context.Get(Password);
-            var cookiePath = context.Get(CookieStoragePath);
-            var userDataDir = context.Get(UserDataDir) ?? "playwright-user";
-            var maxRetries = context.Get(MaxRetries);
-
-            int retryCount = 0;
-            bool success = false;
+            // Check if cookie file exists
+            if (File.Exists(cookieFile))
+            {
+                _logger.LogInformation($"Cookie file '{cookieFile}' exists. Skipping login.");
+                _logger.LogDebug("Loading debug.");
+                _logger.LogTrace("Loading trace.");
+                Success.Set(context, true);
+                await context.CompleteActivityAsync();
+                return;
+            }
 
             while (retryCount < maxRetries && !success)
             {
-                retryCount++;
-                _logger.LogInformation("Gmail login attempt {Attempt} of {Max}", retryCount, maxRetries);
-
                 try
                 {
-                    using var playwright = await Playwright.CreateAsync();
-                    var browser = await playwright.Chromium.LaunchPersistentContextAsync(userDataDir, new BrowserTypeLaunchPersistentContextOptions
+                    retryCount++;
+                    _logger.LogInformation("Gmail login attempt {Count} of {Max}", retryCount, maxRetries);
+
+                    // Initialize Playwright
+                    _playwright = await Playwright.CreateAsync();
+                    if (_playwright != null)
                     {
-                        Headless = false,
-                        Args = new[] {
-                            "--disable-blink-features=AutomationControlled",
-                            "--start-maximized"
-                        },
-                        UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
-                    });
+                        _browser = await _playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
+                        {
+                            Headless = false, // Set to true in production
+                            Args = new[]
+                            {
+                                "--disable-blink-features=AutomationControlled",
+                                "--start-maximized"
+                            }
+                        });
+                        // Set browser context at the class level
+                        this._browserContext = await _browser.NewContextAsync(new BrowserNewContextOptions
+                        {
+                            UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
+                            ViewportSize = new ViewportSize { Width = 1920, Height = 1080 },
+                            ScreenSize = new ScreenSize { Width = 1920, Height = 1080 },
+                            Locale = "en-US",
+                            TimezoneId = "America/New_York"
+                        });
+                        _page = await _browserContext.NewPageAsync();
 
-                    var _page = browser.Pages.FirstOrDefault() ?? await browser.NewPageAsync();
-                    await _page.GotoAsync("https://mail.google.com/");
-
-                    await _page.FillAsync("input[type='email']", email);
-                    await _page.ClickAsync("#identifierNext");
-                    await _page.WaitForTimeoutAsync(2000);
-
-                    await _page.FillAsync("input[type='password']", password);
-                    await _page.ClickAsync("#passwordNext");
-
-                    await _page.WaitForNavigationAsync(new PageWaitForNavigationOptions
-                    {
-                        UrlRegex = new System.Text.RegularExpressions.Regex("myaccount.google.com|mail.google.com")
-                    });
-
-                    if (_page.Url.Contains("myaccount.google.com") || _page.Url.Contains("mail.google.com"))
-                    {
-                        var cookies = await _page.Context.CookiesAsync();
-                        var json = JsonSerializer.Serialize(cookies, new JsonSerializerOptions { WriteIndented = true });
-                        await File.WriteAllTextAsync(cookiePath, json);
-                        success = true;
+                        if (_page != null)
+                        {
+                            await _page.GotoAsync("https://mail.google.com/mail");
+                            await _page.FillAsync("[type='email']", email, new() { Timeout = 10000 });
+                            await Task.Delay(1000);
+                            await _page.ClickAsync("#identifierNext");
+                            await _page.WaitForSelectorAsync("[type='password']", new() { Timeout = 100000 });
+                            await _page.FillAsync("[type='password']", password);
+                            await _page.ClickAsync("#passwordNext");
+                            try
+                            {
+                                await _page.WaitForURLAsync("https://mail.google.com/mail/u/0/#inbox", new() { Timeout = 30000 });
+                                if (_browserContext != null)
+                                {
+                                    var cookies = await _browserContext.CookiesAsync();
+                                    await File.WriteAllTextAsync(cookieFile, JsonSerializer.Serialize(cookies));
+                                    success = true;
+                                    _logger.LogInformation("Successfully logged into Gmail and stored cookies");
+                                }
+                            }
+                            catch (TimeoutException)
+                            {
+                                _logger.LogWarning("Login verification timed out");
+                                throw;
+                            }
+                        }
                     }
-
-                    await browser.CloseAsync();
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogWarning(ex, "Login attempt failed: {Message}", ex.Message);
-                    await Task.Delay(3000);
+                    _logger.LogError(ex, "Failed login attempt {Count}", retryCount);
+                    await CleanupAsync();
+                    if (retryCount < maxRetries)
+                    {
+                        await Task.Delay(5000);
+                    }
                 }
             }
 
-            context.Set(Success, success);
+            await CleanupAsync();
+            Success.Set(context, success);
+            await context.CompleteActivityAsync();
         }
 
         private async Task CleanupAsync()

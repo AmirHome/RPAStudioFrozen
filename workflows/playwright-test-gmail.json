@@ -1,0 +1,108 @@
+{
+    "$schema": "https://elsaworkflows.io/schemas/workflow-definition/v3.0.0/schema.json",
+    "id": "79363b4a09e45da7",
+    "definitionId": "c3a9250d20e9d798",
+    "name": "Playwright Test Gmail",
+    "createdAt": "2025-06-24T11:23:37.3576663\u002B00:00",
+    "version": 14,
+    "toolVersion": "3.4.0.0",
+    "variables": [],
+    "inputs": [],
+    "outputs": [],
+    "outcomes": [],
+    "customProperties": {},
+    "isReadonly": false,
+    "isSystem": false,
+    "isLatest": true,
+    "isPublished": false,
+    "options": {
+        "autoUpdateConsumingWorkflows": false
+    },
+    "root": {
+        "id": "39269794497bd",
+        "nodeId": "Workflow1:39269794497bd",
+        "name": "Flowchart1",
+        "type": "Elsa.Flowchart",
+        "version": 1,
+        "customProperties": {
+            "notFoundConnections": [],
+            "canStartWorkflow": false,
+            "runAsynchronously": false
+        },
+        "metadata": {},
+        "activities": [
+            {
+                "email": {
+                    "typeName": "String",
+                    "expression": {
+                        "type": "Literal",
+                        "value": "nonentity.g@gmail.com"
+                    }
+                },
+                "password": {
+                    "typeName": "String",
+                    "expression": {
+                        "type": "Literal",
+                        "value": "nonentity.g71391"
+                    }
+                },
+                "cookieStoragePath": {
+                    "typeName": "String",
+                    "expression": {
+                        "type": "Literal",
+                        "value": "gmail_cookies.json"
+                    }
+                },
+                "maxRetries": {
+                    "typeName": "Int32",
+                    "expression": {
+                        "type": "Literal",
+                        "value": "1"
+                    }
+                },
+                "userDataDir": {
+                    "typeName": "String",
+                    "expression": {
+                        "type": "Literal",
+                        "value": "./"
+                    }
+                },
+                "success": null,
+                "id": "21747d0110fc8872",
+                "nodeId": "Workflow1:39269794497bd:21747d0110fc8872",
+                "name": "GmailLoginActivity1",
+                "type": "GmailLogin.GmailLoginActivity",
+                "version": 1,
+                "customProperties": {
+                    "canStartWorkflow": false,
+                    "runAsynchronously": false
+                },
+                "metadata": {
+                    "designer": {
+                        "position": {
+                            "x": 180,
+                            "y": -220
+                        },
+                        "size": {
+                            "width": 172.390625,
+                            "height": 50
+                        }
+                    }
+                }
+            }
+        ],
+        "variables": [],
+        "connections": [
+            {
+                "source": {
+                    "activity": "d8272b118f155a54",
+                    "port": "Done"
+                },
+                "target": {
+                    "activity": "21747d0110fc8872",
+                    "port": "In"
+                }
+            }
+        ]
+    }
+}
