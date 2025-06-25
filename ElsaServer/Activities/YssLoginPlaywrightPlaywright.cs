@@ -30,9 +30,15 @@ namespace ElsaServer.Activities
             {
                 // Initialize Playwright
                 _playwright = await Playwright.CreateAsync();
+                // Find the path to Edge. Update this path if Edge is installed elsewhere.
+                var edgePath = @"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe";
+                if (!System.IO.File.Exists(edgePath))
+                    edgePath = @"C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe";
+
                 _browser = await _playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
                 {
-                    Headless = headless
+                    Headless = headless,
+                    ExecutablePath = edgePath
                 });
                 _page = await _browser.NewPageAsync();
 
@@ -44,9 +50,10 @@ namespace ElsaServer.Activities
                         Headless = false, // Set to true in production
                         Args = new[]
                         {
-                                "--disable-blink-features=AutomationControlled",
-                                "--start-maximized"
-                            }
+                            "--disable-blink-features=AutomationControlled",
+                            "--start-maximized"
+                        },
+                        ExecutablePath = edgePath
                     });
                     // Set browser context at the class level
                     this._browserContext = await _browser.NewContextAsync(new BrowserNewContextOptions
