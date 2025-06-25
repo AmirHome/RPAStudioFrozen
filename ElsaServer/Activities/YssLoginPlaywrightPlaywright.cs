@@ -16,6 +16,9 @@ namespace ElsaServer.Activities
 
         private IPlaywright? _playwright;
         private IBrowser? _browser;
+
+        private IBrowserContext? _browserContext; // Moved browser context to class level
+        
         private IPage? _page;
 
         protected override async ValueTask ExecuteAsync(ActivityExecutionContext context)
@@ -33,20 +36,43 @@ namespace ElsaServer.Activities
                 });
                 _page = await _browser.NewPageAsync();
 
-                // Navigate to website
-                await _page.GotoAsync(url);
+                    _playwright = await Playwright.CreateAsync();
+                if (_playwright != null)
+                {
+                    _browser = await _playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
+                    {
+                        Headless = false, // Set to true in production
+                        Args = new[]
+                        {
+                                "--disable-blink-features=AutomationControlled",
+                                "--start-maximized"
+                            }
+                    });
+                    // Set browser context at the class level
+                    this._browserContext = await _browser.NewContextAsync(new BrowserNewContextOptions
+                    {
+                        UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
+                        ViewportSize = new ViewportSize { Width = 1920, Height = 1080 },
+                        ScreenSize = new ScreenSize { Width = 1920, Height = 1080 },
+                        Locale = "en-US",
+                        TimezoneId = "America/New_York"
+                    });
+                    _page = await _browserContext.NewPageAsync();
 
-                // Verify title contains website
-                await Microsoft.Playwright.Assertions.Expect(_page).ToHaveTitleAsync(new Regex("Playwright"));
+                    // Navigate to website
+                    await _page.GotoAsync(url);
 
-                // Click the get started link
-                await _page.GetByRole(AriaRole.Link, new() { Name = "Get started" }).ClickAsync();
+                    // Verify title contains website
+                    await Microsoft.Playwright.Assertions.Expect(_page).ToHaveTitleAsync(new Regex("Playwright"));
 
-                // Verify Installation heading is visible by Console.WriteLine
-                await Microsoft.Playwright.Assertions.Expect(_page.GetByRole(AriaRole.Heading, new() { Name = "Installation" })).ToBeVisibleAsync();
-                logger.LogInformation("Successfully clicked the 'Get started' link and verified the 'Installation' heading is visible.");
+                    // Click the get started link
+                    await _page.GetByRole(AriaRole.Link, new() { Name = "Get started" }).ClickAsync();
 
+                    // Verify Installation heading is visible by Console.WriteLine
+                    await Microsoft.Playwright.Assertions.Expect(_page.GetByRole(AriaRole.Heading, new() { Name = "Installation" })).ToBeVisibleAsync();
+                    logger.LogInformation("Successfully clicked the 'Get started' link and verified the 'Installation' heading is visible.");
 
+                }
             }
             catch (PlaywrightException ex)
             {
