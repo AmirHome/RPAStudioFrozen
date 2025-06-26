@@ -14,10 +14,10 @@ namespace ElsaServer.Activities
         [Input(Description = "YSS sisteminde Takip Bilgileri Giriş", Category = "Browser Settings", DefaultValue = true)]
         public Input<bool> Headless { get; set; } = new(true);
 
-        [Input(Description = "Username for login", Category = "Login Credentials", DefaultValue = "")]
+        [Input(Description = "Username for login", Category = "Login Credentials", DefaultValue = "burak_yurtnac")]
         public Input<string> Username { get; set; } = new("");
 
-        [Input(Description = "Password for login", Category = "Login Credentials", DefaultValue = "")]
+        [Input(Description = "Password for login", Category = "Login Credentials", DefaultValue = "etcBASE123*")]
         public Input<string> Password { get; set; } = new("");
 
         [Input(Description = "Captcha text if required", Category = "Login Credentials", DefaultValue = "")]
@@ -35,19 +35,20 @@ namespace ElsaServer.Activities
             var password = Password.Get(context);
             var captcha = Captcha.Get(context);
             var logger = context.GetRequiredService<ILogger<YssLoginPlaywrightPlaywright>>();
-            string url = "https://alacaktakip.ic-a.com.tr/dcs/login.jsp";
+            string url = "http://alacaktakip.ic-a.com.tr/dcs/login.jsp";
 
             try
             {
                 _playwright = await Playwright.CreateAsync();
-                var edgePath = @"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe";
-                if (!System.IO.File.Exists(edgePath))
-                    edgePath = @"C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe";
+                var flashChromePath = @"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe";
+                //var flashChromePath = @"C:\\GoogleChromeForEtcbaseYTS\\GoogleChromeForEtcbaseYTS.exe";
+                if (!System.IO.File.Exists(flashChromePath))
+                    flashChromePath = @"C:\\GoogleChromeForEtcbaseYTS\\GoogleChromeForEtcbaseYTS.exe";
 
                 _browser = await _playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
                 {
                     Headless = headless,
-                    ExecutablePath = edgePath
+                    ExecutablePath = flashChromePath
                 });
 
                 _browserContext = await _browser.NewContextAsync(new BrowserNewContextOptions
