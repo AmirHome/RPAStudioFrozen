@@ -7,30 +7,39 @@ using System.Text.RegularExpressions;
 
 namespace ElsaServer.Activities
 {
-    [Activity("YssLoginPlaywrightPlaywright", "AH-Playwright", "Performs a test click on Playwright website")]
+    [Activity("YssLoginPlaywrightPlaywright", "AH-Playwright", "Performs a test click and fills login form on Playwright website")]
 
     public class YssLoginPlaywrightPlaywright : Activity
     {
         [Input(Description = "YSS sisteminde Takip Bilgileri Giriş", Category = "Browser Settings", DefaultValue = true)]
         public Input<bool> Headless { get; set; } = new(true);
 
+        [Input(Description = "Username for login", Category = "Login Credentials", DefaultValue = "")]
+        public Input<string> Username { get; set; } = new("");
+
+        [Input(Description = "Password for login", Category = "Login Credentials", DefaultValue = "")]
+        public Input<string> Password { get; set; } = new("");
+
+        [Input(Description = "Captcha text if required", Category = "Login Credentials", DefaultValue = "")]
+        public Input<string> Captcha { get; set; } = new("");
+
         private IPlaywright? _playwright;
         private IBrowser? _browser;
-
-        private IBrowserContext? _browserContext; // Moved browser context to class level
-        
+        private IBrowserContext? _browserContext;
         private IPage? _page;
 
         protected override async ValueTask ExecuteAsync(ActivityExecutionContext context)
         {
             var headless = Headless.Get(context);
+            var username = Username.Get(context);
+            var password = Password.Get(context);
+            var captcha = Captcha.Get(context);
             var logger = context.GetRequiredService<ILogger<YssLoginPlaywrightPlaywright>>();
-            string url = "https://alacaktakip.ic-a.com.tr/";
+            string url = "https://alacaktakip.ic-a.com.tr/dcs/login.jsp";
+
             try
             {
-                // Initialize Playwright
                 _playwright = await Playwright.CreateAsync();
-                // Find the path to Edge. Update this path if Edge is installed elsewhere.
                 var edgePath = @"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe";
                 if (!System.IO.File.Exists(edgePath))
                     edgePath = @"C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe";
@@ -40,56 +49,40 @@ namespace ElsaServer.Activities
                     Headless = headless,
                     ExecutablePath = edgePath
                 });
-                _page = await _browser.NewPageAsync();
 
-                    _playwright = await Playwright.CreateAsync();
-                if (_playwright != null)
+                _browserContext = await _browser.NewContextAsync(new BrowserNewContextOptions
                 {
-                    _browser = await _playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
-                    {
-                        Headless = false, // Set to true in production
-                        Args = new[]
-                        {
-                            "--disable-blink-features=AutomationControlled",
-                            "--start-maximized"
-                        },
-                        ExecutablePath = edgePath
-                    });
-                    // Set browser context at the class level
-                    this._browserContext = await _browser.NewContextAsync(new BrowserNewContextOptions
-                    {
-                        UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
-                        ViewportSize = new ViewportSize { Width = 1920, Height = 1080 },
-                        ScreenSize = new ScreenSize { Width = 1920, Height = 1080 },
-                        Locale = "en-US",
-                        TimezoneId = "America/New_York"
-                    });
-                    _page = await _browserContext.NewPageAsync();
+                    UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
+                    ViewportSize = new ViewportSize { Width = 1920, Height = 1080 },
+                    ScreenSize = new ScreenSize { Width = 1920, Height = 1080 },
+                    Locale = "en-US",
+                    TimezoneId = "America/New_York"
+                });
+                _page = await _browserContext.NewPageAsync();
 
-                    // Navigate to website
-                    await _page.GotoAsync(url);
+                await _page.GotoAsync(url);
 
-                    // Verify title contains website
-                    await Microsoft.Playwright.Assertions.Expect(_page).ToHaveTitleAsync(new Regex("Playwright"));
-
-                    // Click the get started link
-                    await _page.GetByRole(AriaRole.Link, new() { Name = "Get started" }).ClickAsync();
-
-                    // Verify Installation heading is visible by Console.WriteLine
-                    await Microsoft.Playwright.Assertions.Expect(_page.GetByRole(AriaRole.Heading, new() { Name = "Installation" })).ToBeVisibleAsync();
-                    logger.LogInformation("Successfully clicked the 'Get started' link and verified the 'Installation' heading is visible.");
-
+                // Fill the login form
+                await _page.FillAsync("input[name='KullaniciAdi']", username);
+                await _page.FillAsync("input[name='Sifre']", password);
+                if (!string.IsNullOrEmpty(captcha))
+                {
+                    await _page.FillAsync("input[name='Dogru']", captcha);
                 }
+
+                // Submit the form
+                await _page.ClickAsync("button[type='submit']");
+
+                logger.LogInformation("Login form filled and submitted successfully.");
             }
             catch (PlaywrightException ex)
             {
-                logger.LogWarning("Failed to consent: {Message}", ex.Message);
-                throw new Exception($"Failed to visit website {url}", ex);
+                logger.LogWarning("Failed to login: {Message}", ex.Message);
+                throw new Exception($"Failed to visit or fill website {url}", ex);
             }
             finally
             {
-                // Cleanup
-                if (!headless && _browser != null) // Keep browser open for a bit if not headless
+                if (!headless && _browser != null)
                 {
                     logger.LogInformation("Keeping browser open for 5 seconds in non-headless mode.");
                     await Task.Delay(5000);
@@ -97,7 +90,6 @@ namespace ElsaServer.Activities
                 if (_page != null) await _page.CloseAsync();
                 if (_browser != null) await _browser.DisposeAsync();
                 if (_playwright != null) _playwright.Dispose();
-
             }
 
             await context.CompleteActivityAsync();
