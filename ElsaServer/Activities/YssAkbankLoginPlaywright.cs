@@ -7,9 +7,9 @@ using System.Text.RegularExpressions;
 
 namespace ElsaServer.Activities
 {
-    [Activity("YssLoginPlaywrightPlaywright", "AH-Playwright", "Performs a test click and fills login form on Playwright website")]
+    [Activity("YssAkbankLoginPlaywright", "AH-Playwright", "Performs a test click and fills login form on Playwright website")]
 
-    public class YssLoginPlaywrightPlaywright : Activity
+    public class YssAkbankLoginPlaywright : Activity
     {
         [Input(Description = "YSS sisteminde Takip Bilgileri Giriş", Category = "Browser Settings", DefaultValue = true)]
         public Input<bool> Headless { get; set; } = new(true);
@@ -34,16 +34,16 @@ namespace ElsaServer.Activities
             var username = Username.Get(context);
             var password = Password.Get(context);
             var captcha = Captcha.Get(context);
-            var logger = context.GetRequiredService<ILogger<YssLoginPlaywrightPlaywright>>();
-            string url = "http://alacaktakip.ic-a.com.tr/dcs/login.jsp";
+            var logger = context.GetRequiredService<ILogger<YssAkbankLoginPlaywright>>();
+            string url = "https://yts.akbank.com/dcs/login.jsp";
 
             try
             {
                 _playwright = await Playwright.CreateAsync();
-                var flashChromePath = @"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe";
-                //var flashChromePath = @"C:\\GoogleChromeForEtcbaseYTS\\GoogleChromeForEtcbaseYTS.exe";
+                //var flashChromePath = @"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe";
+                var flashChromePath = @"C:\\Users\\econadmin\\Documents\\GoogleChromeForEtcbase\\GoogleChromeForEtcbaseYTS.exe";
                 if (!System.IO.File.Exists(flashChromePath))
-                    flashChromePath = @"C:\\GoogleChromeForEtcbaseYTS\\GoogleChromeForEtcbaseYTS.exe";
+                    flashChromePath = @"C:\\Users\\econadmin\\Documents\\GoogleChromeForEtcbase\\GoogleChromeForEtcbaseYTS.exe";
 
                 _browser = await _playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
                 {
